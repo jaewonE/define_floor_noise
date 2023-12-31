@@ -98,6 +98,47 @@ namespace {
     }
   }
 
+void getSensorData2(int8_t arr[384]) {
+  unsigned long lastTime = 0;
+  float prev_x = 0, prev_y = 0, prev_z = 0;
+  float x=0, y=0, z=0;
+  int8_t temp;
+  Serial.println("Collecting data...");
+
+  for (int i = 0; i < 384; i+=3) {
+    while (millis() - lastTime < 10) {}
+
+    lastTime = millis();
+
+    if (IMU.accelerationAvailable()) {
+      IMU.readAcceleration(x, y, z);
+
+      if (i != 0) {
+        temp = static_cast<int8_t>((x - prev_x) * 200);
+        arr[i] = temp > 128 ? 127 : (temp < -128 ? -128 : temp);
+        temp = static_cast<int8_t>((y - prev_y) * 200);
+        arr[i + 1] = temp > 128 ? 127 : (temp < -128 ? -128 : temp);
+        temp = static_cast<int8_t>((z - prev_z) * 200);
+        arr[i + 2] = temp > 128 ? 127 : (temp < -128 ? -128 : temp);
+
+        prev_x = x;
+        prev_y = y;
+        prev_z = z;
+
+        // Serial.print(arr[i]);
+        // Serial.print(", ");
+        // Serial.print(arr[i+1]);
+        // Serial.print(", ");
+        // Serial.println(arr[i+2]);
+      } else {
+        arr[i] = 0;
+        arr[i + 1] = 0;
+        arr[i + 2] = 0;
+      }
+    }
+  }
+}
+
   void getSensorData(int8_t arr[384]) {
     unsigned long lastTime = 0; // 마지막 측정 시간을 저장할 변수
     Serial.println("Collecting data...");

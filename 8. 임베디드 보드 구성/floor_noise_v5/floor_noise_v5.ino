@@ -44,10 +44,13 @@ namespace {
   // 1.28초에 한번씩 노이즈 여부를 측정하며 현재 측정 시점을 기준으로
   // noise_window_size 내에 noise_count_threshold 이상의 노이즈가 
   // 감지될 경우 층간소음으로 판단하여 LED를 점등한다.
-  constexpr int noise_window_size = 16;
+  constexpr int noise_window_size = 10;
   constexpr int noise_count_threshold = 2;
   int noise_index = 0;  // 현재 윈도우 인덱스
   bool noise_window[noise_window_size] = {false};
+
+  // 움직임이 있는지 정의하는 기준값.
+  constexpr int8_t move_threshold = 5;
 
 }  // namespace
 
@@ -161,6 +164,18 @@ void resetWindow() {
   }
 }
 
+bool hasMoved(int8_t arr[384]) {
+  int abs_sum = 0;
+  for(int i=2; i<384;i+=3) {
+    abs_sum = arr[i] < 0 ? -1 * arr[i] : arr[i];
+  }
+  // Serial.print("abs_sum: ");
+  Serial.print("[");
+  Serial.print(abs_sum);
+  Serial.print("]");
+  return abs_sum >= move_threshold;
+}
+
 void loop() {
   BLEDevice central = BLE.central();
   
@@ -179,7 +194,7 @@ void loop() {
     return;
   }
 
-  getSensorData(raster_buffer);
+  getSensorData2(raster_buffer);
   // for(int i=1; i<=384;i++) {
   //   Serial.print(raster_buffer[i-1]);
   //   Serial.print(", ");
@@ -187,19 +202,30 @@ void loop() {
   //     Serial.println();
   //   }
   // }
+  bool isFloorNoise = false;
+  if(hasMoved(raster_buffer)) {
+    // // Pass to the model and run the interpreter
+    TfLiteTensor* model_input = interpreter->input(0);
+    for (int i = 0; i < raster_byte_count; i++) {
+      model_input->data.f[i] = (float)(raster_buffer[i]);
+    }
+    TfLiteStatus invoke_status = interpreter->Invoke();
+    if (invoke_status != kTfLiteOk) {
+      TF_LITE_REPORT_ERROR(error_reporter, "Invoke failed");
+      return;
+    }
+    TfLiteTensor* output = interpreter->output(0);
+    isFloorNoise = output->data.f[0] >= output->data.f[1];
 
-  // // Pass to the model and run the interpreter
-  TfLiteTensor* model_input = interpreter->input(0);
-  for (int i = 0; i < raster_byte_count; i++) {
-    model_input->data.f[i] = (float)(raster_buffer[i]);
+    // 상태 출력
+    Serial.print("Pred: 층간소음 ");
+    Serial.print(isFloorNoise ? "O (" : "X (");
+    Serial.print(output->data.f[0]);
+    Serial.print(", ");
+    Serial.print(output->data.f[1]); 
+    Serial.println(")");
+
   }
-  TfLiteStatus invoke_status = interpreter->Invoke();
-  if (invoke_status != kTfLiteOk) {
-    TF_LITE_REPORT_ERROR(error_reporter, "Invoke failed");
-    return;
-  }
-  TfLiteTensor* output = interpreter->output(0);
-  bool isFloorNoise = output->data.f[0] >= output->data.f[1];
 
   noise_window[noise_index] = isFloorNoise;
   noise_index = (noise_index + 1) % noise_window_size;
@@ -214,18 +240,10 @@ void loop() {
     }
   }
   // Serial.println();
-
-  // 상태 출력
-  Serial.print("Pred: 층간소음 ");
-  Serial.print(isFloorNoise ? "O (" : "X (");
-  Serial.print(output->data.f[0]);
-  Serial.print(", ");
-  Serial.print(output->data.f[1]); 
-  Serial.println(")");
-
   Serial.print("누적 층간소음 횟수: ");
   Serial.println(noise_sum);
   Serial.println();
+
 
   if (noise_sum >= noise_count_threshold) {
     // 층간소음으로 판단될 경우 0.5초간 점등하기를 5번 반복한다.
