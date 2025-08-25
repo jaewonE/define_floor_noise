@@ -1,5 +1,7 @@
 # TinyML을 이용한 층간소음 분석
 
+- **DBpia**: https://www.dbpia.co.kr/journal/articleDetail?nodeId=NODE11743327
+
 ## 1. 프로젝트 소개
 
 ### 1-1. 프로젝트 개요
