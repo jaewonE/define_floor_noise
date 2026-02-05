@@ -1,0 +1,8 @@
+category,test_count,true_count,false_count,accuracy_percent
+Walking,100,93,7,93
+Random Walking,100,96,4,96
+Running,100,96,4,96
+Hammer blow,100,100,0,100
+Rolling dumbbell,100,100,0,100
+Desk drag,100,91,9,91
+Total,600,576,24,96

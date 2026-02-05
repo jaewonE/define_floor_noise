@@ -1,59 +1,87 @@
-# TinyML을 이용한 층간소음 분석
+# Inter-floor Noise Detection with TinyML (On-Sensor AI)
 
-- **DBpia**: https://www.dbpia.co.kr/journal/articleDetail?nodeId=NODE11743327
+[ [English](https://github.com/JaewonE/define_floor_noise/blob/main/README) | [한국어](https://github.com/JaewonE/define_floor_noise/blob/main/README.ko.md) ]
 
-## 1. 프로젝트 소개
+This repository contains the implementation assets behind the paper:
+**“Addressing Inter-floor Noise Issues in Apartment Buildings using On-Sensor AI Embedded with TinyML on Ultra-Low-Power Systems”** (March 2024).
 
-### 1-1. 프로젝트 개요
+The project targets real-time inter-floor noise discrimination using Arduino Nano 33 BLE boards and an on-device CNN (TensorFlow Lite for Microcontrollers), avoiding server-side inference.
 
-인구밀도가 높은 한국의 주택 구조는 아파트와 빌라가 많다. 아파트는 빌라는 여러 가구가 모여 살기에 층간 소음이 있다. 층간 소음은 여전히 사회적으로 많은 문제를 일으키고 있다. 이 문제를 해결하기 위해 임베디드 기기에 TinyML을 적용하여 층간 소음을 모니터링하다가 층간 소음을 판단하는 지능형 기기를 만들고자 한다.
+The original chronological research log has been reorganized into a portfolio-first structure focused on reproducibility, traceability, and paper-to-code mapping.
 
-층간 소음 판단 기기는 위층에 있는 지능형 기기에 ZigBee 같은 무선 통신을 통해 소음 상태를 전달한다. 소음을 전달받은 위층의 지능형 기기는 거주자에게 소음 경고의 메시지를 전달하여, 소음을 자제하도록 한다.
+## Paper
 
-사람들은 소음을 정량화 할수 없고, 감정적이므로 사람들이 나서서 층간 소음 문제를 해결하기는 어려운 문제다. 층간 소음을 판단하는 지능형 기기들이 소음을 정량화하고, 서로 통신하여, 사람들에게 소음 상태를 알려준다면 층간 소음으로 인한 이웃 간의 갈등의 문제는 많이 줄어들 것으로 예상된다.
+- PDF: [`paper/Addressing Inter-floor Noise Issues in Apartment Buildings using On-Sensor AI Embedded with TinyML on Ultra-Low-Power Systems.pdf`](https://github.com/JaewonE/define_floor_noise/blob/main/paper/Addressing%20Inter-floor%20Noise%20Issues%20in%20Apartment%20Buildings%20using%20On-Sensor%20AI%20Embedded%20with%20TinyML%20on%20Ultra-Low-Power%20Systems.pdf)
+- Summary: [`docs/paper_summary.md`](https://github.com/JaewonE/define_floor_noise/blob/main/docs/paper_summary.md)
+- Paper-to-code map: [`docs/paper_to_code_map.md`](https://github.com/JaewonE/define_floor_noise/blob/main/docs/paper_to_code_map.md)
 
-<br>
+## Quickstart
 
-### 1-2. 프로젝트 목표
+1. Create an environment and install dependencies:
 
-이 프로젝트의 목표는 비용이 저렴한 MCU를 탑재한 임베디드 기기에 진동 센서를 내장하고, TinyML를 적용하여, 층간 소음을 판별하는 저렴한 지능형 기기를 만드는 것이다. 지능형 기기는 Zigbee를 이용하여, 서로 통신을 수행한다.
+```bash
+python -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+```
 
-<br>
+2. Run repository sanity checks:
 
-### 1-3. 프로젝트 주요 내용
+```bash
+make smoke
+```
 
-층간 소음을 판별하고 소음 상태를 공유하는 지능형 기기를 개발은 다음과 같이 수행된다.
+3. Rebuild dataset windows (optional, if regenerating processed data):
 
-- 첫 번째는 층간 소음 데이터를 모은다.
+```bash
+make preprocess
+```
 
-- 두 번째는 모은 층간 소음 데이터를 CNN 모델을 통해서, 학습을 시킨다.
+4. Train/evaluate/export model:
 
-- 세 번째는 MCU와 진동 센서, Zigbee를 가진 임베디드 보드를 구성한다.
+```bash
+make train
+```
 
-- 네 번째는 학습된 층간 소음을 판별하는 CNN 모델을 TinyML application에 포함시키고, 구성된 임베디드 보드에 베포한다.
+5. Convert `.tflite` to C array for firmware:
 
-- 다섯 번째 층간 소음을 판별하는 지능형 기기는 모니터링하다가 층간 소음이라고 판단되면, 위층의 지능형 기기에 무선 통신을 수행한다. 위층의 지능형 기기는 층간 소음 메시지를 받은 후 층간 소음 알람을 알린다.
+```bash
+make tflite2cc
+```
 
-<br>
+## Reproducing Key Results
 
-## 2. 파일 구성 및 활동 내용
+- Full reproduction guide: [`docs/reproduce.md`](https://github.com/JaewonE/define_floor_noise/blob/main/docs/reproduce.md)
+- Experimental summary artifacts: [`experiments/results/`](https://github.com/JaewonE/define_floor_noise/blob/main/experiments/results)
 
-주 활동 내용은 다음과 같으며, 각 활동에 대한 자세한 내용은 각가의 폴더에 있는 README.md 파일을 참고한다.
+## Repository Structure
 
-1. 선행 연구 조사 및 센서 조사
+- `paper/`: included paper PDF and citation metadata
+- `docs/`: methodology summary, mapping, reproduction, audit notes
+- `src/`: reproducible Python scripts (collection helpers, preprocessing, training)
+- `embedded/`: on-device TinyML firmware (final `floor_noise_v5`) + BLE examples
+- `data/`: raw captures and processed train/eval windows
+- `notebooks/`: paper-related notebooks + legacy tutorial notebook
+- `experiments/`: trained artifacts and reported result tables
+- `assets/`: project images used in docs
+- `archive/`: original chronological project layout for traceability
 
-2. 데이터 처리 프로세스 설계
+## What’s In / What’s Not
 
-3. CNN 모델 및 TF Lite 변환 스터디
+### In this repo
 
-4. 샘플 데이터 수집
+- Raw/processed data files used during development (small-to-midsize local datasets)
+- Model artifacts (`.tflite`, `.cc`) and firmware source
+- Reproducible scripts for preprocessing/training/export
 
-5. 샘플 데이터 분석 및 CNN 모델 생성
+### Not in this repo
 
-6. 실제 데이터 수집
+- Physical hardware setup automation (manual installation on-site)
+- Full experimental environment replication (building/floor setup constraints)
+- Guaranteed bit-identical retraining outcomes across all TensorFlow versions/hardware
 
-7. 실제 데이터 분석 및 CNN 모델 생성
+## Citation
 
-8. 임베디드 보드 구성
+If you use this repository, please cite:
 
-9. 통합 테스트
+> J.-W. Kwak and I.-Y. Choi, “Addressing Inter-floor Noise Issues in Apartment Buildings using On-Sensor AI Embedded with TinyML on Ultra-Low-Power Systems,” _Journal of The Korea Society of Computer and Information_, vol. 29, no. 3, pp. 75–81, Mar. 2024.
