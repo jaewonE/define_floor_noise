@@ -1,6 +1,9 @@
 # Inter-floor Noise Detection with TinyML (On-Sensor AI)
 
-[ [English](https://github.com/JaewonE/define_floor_noise/blob/main/README) | [한국어](https://github.com/JaewonE/define_floor_noise/blob/main/README.ko.md) ]
+[ [English](https://github.com/jaewonE/define_floor_noise) | [한국어](https://github.com/JaewonE/define_floor_noise/blob/main/README.ko.md) ]
+
+- **DBpia**: https://www.dbpia.co.kr/journal/articleDetail?nodeId=NODE11743327
+- **PDF**: [`paper/Addressing Inter-floor Noise Issues in Apartment Buildings using On-Sensor AI Embedded with TinyML on Ultra-Low-Power Systems.pdf`](https://github.com/JaewonE/define_floor_noise/blob/main/paper/Addressing%20Inter-floor%20Noise%20Issues%20in%20Apartment%20Buildings%20using%20On-Sensor%20AI%20Embedded%20with%20TinyML%20on%20Ultra-Low-Power%20Systems.pdf)
 
 This repository contains the implementation assets behind the paper:
 **“Addressing Inter-floor Noise Issues in Apartment Buildings using On-Sensor AI Embedded with TinyML on Ultra-Low-Power Systems”** (March 2024).

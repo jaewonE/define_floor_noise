@@ -1,6 +1,9 @@
 # TinyML(On-Sensor AI)을 활용한 층간 소음 감지
 
-[ [English](https://github.com/JaewonE/define_floor_noise/blob/main/README) | [한국어](https://github.com/JaewonE/define_floor_noise/blob/main/README.ko.md) ]
+[ [English](https://github.com/jaewonE/define_floor_noise) | [한국어](https://github.com/JaewonE/define_floor_noise/blob/main/README.ko.md) ]
+
+- **DBpia**: https://www.dbpia.co.kr/journal/articleDetail?nodeId=NODE11743327
+- **PDF**: [`paper/Addressing Inter-floor Noise Issues in Apartment Buildings using On-Sensor AI Embedded with TinyML on Ultra-Low-Power Systems.pdf`](https://github.com/JaewonE/define_floor_noise/blob/main/paper/Addressing%20Inter-floor%20Noise%20Issues%20in%20Apartment%20Buildings%20using%20On-Sensor%20AI%20Embedded%20with%20TinyML%20on%20Ultra-Low-Power%20Systems.pdf)
 
 이 저장소는 다음 논문의 구현 자산(assets)을 포함하고 있습니다:
 **“초저전력 시스템상에서 TinyML이 탑재된 On-Sensor AI를 활용한 공동주택 층간 소음 문제 해결”** (2024년 3월).
