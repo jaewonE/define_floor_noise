@@ -1,7 +1,3 @@
-다음은 제공해주신 README 파일의 내용을 한국어로 번역한 것입니다.
-
----
-
 # TinyML(On-Sensor AI)을 활용한 층간 소음 감지
 
 [ [English](https://github.com/JaewonE/define_floor_noise/blob/main/README) | [한국어](https://github.com/JaewonE/define_floor_noise/blob/main/README.ko.md) ]
